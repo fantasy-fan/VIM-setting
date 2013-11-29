@@ -357,18 +357,29 @@ set nowrap
 " 设置行宽和自动换行
 "--------------------------------------------------------------------
 set lbr
-set tw=500
+set tw=120
 
 "--------------------------------------------------------------------
 " Tab and space
 "--------------------------------------------------------------------
-set expandtab
 set softtabstop=4
 set shiftwidth=4
+
+au FileType c,cpp set softtabstop=8
+au FileType c,cpp set shiftwidth=8
+
+au FileType html,xml set softtabstop=2
+au FileType html,xml set shiftwidth=2
+
+au BufRead,BufNewFile *.html,*.jsp,*.tpl,*.htm set softtabstop=2 shiftwidth=2
+au BufRead,BufNewFile *.js set syntax=jquery
+
+set expandtab
 
 """""""""""""""""""""""""""""""""""""""""""""""
 " 自定义快捷键
 """""""""""""""""""""""""""""""""""""""""""""""
+
 " 模仿MS Windows中的快捷键
 nmap <C-a> ggvG$
 
@@ -390,8 +401,9 @@ map <leader>tm :tabmove
 " 缩写
 iab idate <c-r>=strftime("%Y-%m-%d")<CR>
 iab itime <c-r>=strftime("%H:%M")<CR>
-iab imsn luomojingyun@hotmail.com
-iab igmail luomojingyun@gmail.com
+
+" 利用F9在打开和关闭粘贴模式
+set pastetoggle=<F9>
 
 """""""""""""""""""""""""""""""""""""""""""""""
 " Plugins
@@ -425,8 +437,8 @@ imap <C-L>             <C-X><C-L>
 au FileType c,cpp,java :inoremap " ""<ESC>i
 au FileType c,cpp,java :inoremap ' ''<ESC>i
 
-au FileType html,xml :inoremap < <><ESC>i
-au FileType html,xml :inoremap > <c-r>=ClosePair('>')<CR>
+"au FileType html,xml :inoremap < <><ESC>i
+"au FileType html,xml :inoremap > <c-r>=ClosePair('>')<CR>
 
 function ClosePair(char)
 	if getline('.')[col('.') - 1] == a:char
@@ -439,8 +451,7 @@ endf
 "--------------------------------------------------------------------
 " 插件 - suptab.vim
 " 用途 - 用tab实现自动补全
-" script version: 1.0
-" date: 2009-12-03
+" script version: 1.6
 " Vim version: 7.0
 "
 " 注：更新doc命令 :helptags $HOME/.vim/doc
@@ -454,7 +465,6 @@ let g:SuperTabMidWordCompletion=0
 " 插件 - omnicppcomplete.vim
 " 用途 - C++代码自动补全 
 " script version: 0.41
-" date: 2007-09-27
 " Vim version: 7.0
 "
 " Remember set ctags options as follow:
@@ -471,11 +481,10 @@ highlight PmenuSel ctermbg=darkblue
 "--------------------------------------------------------------------
 " 插件 - buferexplore.vim
 " 用途 - Buffer Explorer / Browser 
-" script version: 7.2.2
-" date: 2008-11-19
+" script version: 7.2.8
 " Vim version: 7.0
 "
-" 使用方法: ',be' ',bv' ',bs'
+" 使用方法: ',be' ',bv' ',bs' (mapleader is ',')
 "--------------------------------------------------------------------
 let g:bufExplorerDefaultHelp=0		" Do not show default help.
 let g:bufExplorerShowRelativePath=1	" Show relative paths.
@@ -484,20 +493,51 @@ let g:bufExplorerSplitRight=0		" Split left.
 let g:bufExplorerSplitBelow=1		" Split new window below current.
 
 "--------------------------------------------------------------------
-" 插件 - taglist.vim
+" 插件 - The NERD tree
+" 用途 -  A tree explorer plugin for navigating the filesystem
+" script version: 4.2.0
+" Vim version: 7.0
+"--------------------------------------------------------------------
+let NERDChristmasTree=1
+let NERDTreeToggle=1
+let NERDTreeBookmarksFile=$VIM.'\Data\NerdBookmarks.txt'
+let NERDTreeShowBookmarks=1
+let NERDTreeShowFiles=1
+let NERDTreeShowLineNumbers=1
+let NERDTreeWinPos='left'
+let NERDTreeWinSize=40
+
+nnoremap F :NERDTreeToggle<cr>
+
+"--------------------------------------------------------------------
+" 插件 - tagbar.vim
 " 用途 - Source code browser 
-" script version: 4.5
-" date: 2007-09-21
+" script version: 2.5
+" Vim version: 7.0
+"--------------------------------------------------------------------
+let g:tagbar_left = 1
+
+nnoremap T :TagbarToggle<CR>
+
+"--------------------------------------------------------------------
+" 插件 - nginx.vim
+" 用途 - highlights configuration files for nginx 
+" script version: 0.3.2
 " Vim version: 6.0
 "--------------------------------------------------------------------
-let Tlist_Ctags_Cmd='/usr/bin/ctags'	" 设定linux系统中ctags程序的位置
-let Tlist_Show_One_File=1		" 不同时显示多个文件的tag，只显示当前文件的
-let Tlist_Exit_OnlyWindow=1		" 如果taglist窗口是最后一个窗口，则退出vim
-let Tlist_Use_Right_Window=0		" 在右侧窗口中显示taglist窗口
-let Tlist_WinWidth=40			" 设置taglist窗口宽度
+au BufRead,BufNewFile nginx.conf,openresty_config_sample* set ft=nginx
 
-" 利用F10在打开和关闭间切换,使用F9会和c.vim热键冲突
-map <silent> <F10> :TlistToggle<cr>	
+"--------------------------------------------------------------------
+" 插件 - haproxy.vim
+" 用途 - highlights configuration files for haproxy
+" script version: 0.3
+" Vim version: 7.0
+"--------------------------------------------------------------------
+au BufRead,BufNewFile haproxy* set ft=haproxy
 
-" 利用F9在打开和关闭粘贴模式
-set pastetoggle=<F9>
+"--------------------------------------------------------------------
+" 插件 - thrift.vim
+" 用途 - highlights configuration files for thrift
+"--------------------------------------------------------------------
+au BufRead,BufNewFile *.thrift set filetype=thrift
+au! Syntax thrift source ~/.vim/syntax/thrift.vim
