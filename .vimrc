@@ -518,7 +518,7 @@ nnoremap F :NERDTreeToggle<cr>
 let g:tagbar_left = 1
 
 nnoremap T :TagbarToggle<CR>
-autocmd BufReadPost,FileReadPost *.c,*.cpp,*.java,*.py exe "norm T"
+autocmd BufReadPost,FileReadPost *.c,*.cpp,*.java,*.py exe ":TagbarOpen"
 
 "--------------------------------------------------------------------
 " 插件 - nginx.vim
