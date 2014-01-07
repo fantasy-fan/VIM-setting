@@ -365,8 +365,8 @@ set tw=120
 set softtabstop=4
 set shiftwidth=4
 
-au FileType c,cpp set softtabstop=8
-au FileType c,cpp set shiftwidth=8
+"au FileType c,cpp set softtabstop=8
+"au FileType c,cpp set shiftwidth=8
 
 au FileType html,xml set softtabstop=2
 au FileType html,xml set shiftwidth=2
@@ -379,6 +379,10 @@ set expandtab
 """""""""""""""""""""""""""""""""""""""""""""""
 " 自定义快捷键
 """""""""""""""""""""""""""""""""""""""""""""""
+
+" 选中一段文字并全文搜索这段文字
+:vnoremap <silent> ,/ y/<C-R>=escape(@", '\\/.*$^~[]')<CR><CR> 
+:vnoremap <silent> ,? y?<C-R>=escape(@", '\\/.*$^~[]')<CR><CR>
 
 " 模仿MS Windows中的快捷键
 nmap <C-a> ggvG$
@@ -498,14 +502,15 @@ let g:bufExplorerSplitBelow=1		" Split new window below current.
 " script version: 4.2.0
 " Vim version: 7.0
 "--------------------------------------------------------------------
-let NERDChristmasTree=1
-let NERDTreeToggle=1
-let NERDTreeBookmarksFile=$VIM.'\Data\NerdBookmarks.txt'
-let NERDTreeShowBookmarks=1
-let NERDTreeShowFiles=1
-let NERDTreeShowLineNumbers=1
-let NERDTreeWinPos='left'
-let NERDTreeWinSize=40
+let g:NERDChristmasTree=1
+let g:NERDTreeToggle=1
+let g:NERDTreeBookmarksFile=$VIM.'\Data\NerdBookmarks.txt'
+let g:NERDTreeShowBookmarks=1
+let g:NERDTreeShowFiles=1
+let g:NERDTreeShowLineNumbers=1
+let g:NERDTreeWinPos='left'
+let g:NERDTreeWinSize=40
+"let g:NERDTreeQuitOnOpen=1
 
 nnoremap F :NERDTreeToggle<cr>
 
@@ -516,9 +521,10 @@ nnoremap F :NERDTreeToggle<cr>
 " Vim version: 7.0
 "--------------------------------------------------------------------
 let g:tagbar_left = 1
+let g:tagbar_sort = 0
 
 nnoremap T :TagbarToggle<CR>
-"au BufReadPost,FileReadPost *.c,*.cpp,*.java,*.py exe ":TagbarOpen"
+autocmd VimEnter *.c,*.cpp,*.java,*.py nested :call tagbar#autoopen(1)
 
 "--------------------------------------------------------------------
 " 插件 - nginx.vim
