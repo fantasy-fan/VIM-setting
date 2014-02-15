@@ -666,6 +666,13 @@ let g:tagbar_sort = 0
 nnoremap T :TagbarToggle<CR>
 autocmd VimEnter * nested :call tagbar#autoopen(1)
 
+"--------------------------------------------------------------------
+" ctrlp.vim
+" script version: 1.7.9
+" Vim version: 7.0
+"--------------------------------------------------------------------
+set runtimepath^=~/.vim/bundle/ctrlp.vim
+
 """""""""""""""""""""""""""""""""""""""""""""""
 " Syntax Highlight Plugins
 """""""""""""""""""""""""""""""""""""""""""""""
