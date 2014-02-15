@@ -104,6 +104,8 @@ set fdm=manual
 colorscheme leo
 "colorscheme synic
 "colorscheme asu1dark
+"colo desertEx
+"colo vividchalk
 
 "--------------------------------------------------------------------
 " Font
@@ -199,19 +201,19 @@ set backspace=eol,start,indent
 " Format the statusline
 "
 " Some of the settings list below:
-" %F file name
-" %m file edit status
-" %r readonly flag
-" %Y file type
-" %{&fileformat} file encoding
-" %b current cursor char ASCII code
-" %B current cursor char hex code
-" %l line number
-" %c column number
-" %V virtual column number
-" %p line number percent
-" %% percent
-" %L total line number
+" %F                    file name
+" %m                    file edit status
+" %r                    readonly flag
+" %Y                    file type
+" %{&fileformat}        file encoding
+" %b                    current cursor char ASCII code
+" %B                    current cursor char hex code
+" %l                    line number
+" %c                    column number
+" %V                    virtual column number
+" %p                    line number percent
+" %%                    percent
+" %L                    total line number
 "--------------------------------------------------------------------
 set statusline=\ %F%m%r%h\ %w\ \ CWD:\ %r%{CurDir()}%h\ \ \ Line:\ %l/%L:%c
 
