@@ -15,6 +15,7 @@ set history=700
 "--------------------------------------------------------------------
 " Enable filetype plugin
 "--------------------------------------------------------------------
+filetype on
 filetype plugin on
 filetype indent on
 
@@ -34,9 +35,27 @@ set autoread
 
 "--------------------------------------------------------------------
 " Set mapleader
+"
+" ',' is easy to touch.
 "--------------------------------------------------------------------
 let mapleader = ","
 let g:mapleader = ","
+
+"--------------------------------------------------------------------
+" Set fold
+"
+" setl fen (setlocal foldenable)
+"--------------------------------------------------------------------
+set foldenable
+set fdm=manual
+
+" Special for c,cpp source code
+"au FileType c,cpp setl fdm=syntax | setl fen | setl foldnestmax=1
+"au FileType c,cpp setl fdm=syntax | setl fen
+
+" Remember fold view when close file
+"au BufWinLeave * silent mkview
+"au BufWinEnter * silent loadview
 
 """"""""""""""""""""""""""""""""""""""""""""""""
 " Colors and Fonts
@@ -56,6 +75,13 @@ let g:mapleader = ","
 "colo vividchalk 
 
 "--------------------------------------------------------------------
+" Font
+"--------------------------------------------------------------------
+"set guifont=fixsys:h12:cANSI
+"set guifont=Consolas:h14
+"set guifont=Courier_New:h11:cANSI
+
+"--------------------------------------------------------------------
 " Enable syntax hl
 "--------------------------------------------------------------------
 syntax enable
@@ -70,7 +96,8 @@ syntax enable
 set so=7
 
 "--------------------------------------------------------------------
-" 当你在VIM中用y,p＝＝命令，会自动放到系统剪切板中
+" When calling commands such as p,y, put contents 
+" into system clipboard
 "--------------------------------------------------------------------
 set clipboard+=unnamed  
 
@@ -105,8 +132,8 @@ set nu
 set showmatch
 
 "--------------------------------------------------------------------
-" 1.为HTML的<>添加跳转；
-" 2.在赋值语句的 '=' 和 ';' 来回跳转，用于 C 和 Java 这样的语言；
+" 1. Add <> pattern match for HTML
+" 2. Add =,; pattern match for languages like c, c++,java
 "--------------------------------------------------------------------
 au FileType html,xml set mps+=<:>
 au FileType c,cpp,java set mps+==:;
@@ -122,8 +149,7 @@ set hlsearch
 set incsearch
 
 "--------------------------------------------------------------------
-" 使搜索过程在文件结束时就停止。或者，在反向搜索时在到达
-" 文件开头时停止
+" Not wrap scan
 "--------------------------------------------------------------------
 set nowrapscan
 
@@ -133,43 +159,42 @@ set nowrapscan
 set backspace=eol,start,indent
 
 "--------------------------------------------------------------------
-" 使指定的左右移动光标的键在行首或行尾可以移到前一行或者后一行。
+" Allow the left and right arrow keys, as well as h and l, 
+" to wrap when used at beginning or end of lines.
 "--------------------------------------------------------------------
-"set whichwrap+=<,>,h,l
+"set whichwrap+=<,>,h,l,[,]
 
 "--------------------------------------------------------------------
 " Format the statusline
 "
-" 设置在状态行显示的信息如下:
-" %F 当前文件名
-" %m 当前文件修改状态
-" %r 当前文件是否只读
-" %Y 当前文件类型
-" %{&fileformat}
-" 当前文件编码
-" %b 当前光标处字符的 ASCII 码值
-" %B 当前光标处字符的十六进制值
-" %l 当前光标行号
-" %c 当前光标列号
-" %V 当前光标虚拟列号 (根据字符所占字节数计算)
-" %p 当前行占总行数的百分比
-" %% 百分号
-" %L 当前文件总行数
+" Some of the settings list below:
+" %F file name
+" %m file edit status
+" %r readonly flag
+" %Y file type
+" %{&fileformat} file encoding
+" %b current cursor char ASCII code
+" %B current cursor char hex code
+" %l line number
+" %c column number
+" %V virtual column number
+" %p line number percent
+" %% percent
+" %L total line number
 "--------------------------------------------------------------------
 set statusline=\ %F%m%r%h\ %w\ \ CWD:\ %r%{CurDir()}%h\ \ \ Line:\ %l/%L:%c
 
 function! CurDir()
-	let curdir = substitute(getcwd(), '/Users/amir/', "~/", "g")
-	return curdir
+    let curdir = substitute(getcwd(), '/Users/amir/', "~/", "g")
+    return curdir
 endfunction
 
 "--------------------------------------------------------------------
-" 本选项的值影响最后一个窗口何时有状态行:
-" 0: 永不
-" 1: 只有在有至少两个窗口时
-" 2: 总是
+" If display the status line for the last window
 "
-" 如果你有多个窗口，有状态行会使屏幕看起来好一些，但它会占据一个屏幕行。
+" 0: Never
+" 1: Only when there are at least two windows
+" 2: Always
 "--------------------------------------------------------------------
 set laststatus=2
 
@@ -198,126 +223,157 @@ set nobackup
 """""""""""""""""""""""""""""""""""""""""""""""
 
 "--------------------------------------------------------------------
-" vminfo相关设置:
+" viminfo setting
 "--------------------------------------------------------------------
+"       !       When included, save and restore global variables that start
+"               with an uppercase letter, and don't contain a lowercase
+"               letter.  Thus "KEEPTHIS and "K_L_M" are stored, but "KeepThis"
+"               and "_K_L_M" are not.  Nested List and Dict items may not be
+"               read back correctly, you end up with an empty item.
 "
-" !		如果包含，保存和恢复大写字母开头，并且不包含小写
-"		字母的全局变量。这样，保存"KEEPTHIS" 和"K_L_M"，
-"		但不保存"KeepThis" 和"_K_L_M"。只保存字符串和数值
-"		类型。
+"       "       Maximum number of lines saved for each register.  Old name of
+"               the '<' item, with the disadvantage that you need to put a
+"               backslash before the ", otherwise it will be recognized as the
+"               start of a comment!
 "
-" "		每个寄存器最大保存的行数。'<' 项目的旧名，缺点是
-"		你需要在 "之前加上反斜杠，不然它被识别为注释的开
-"		始！
+"       %       When included, save and restore the buffer list.  If Vim is
+"               started with a file name argument, the buffer list is not
+"               restored.  If Vim is started without a file name argument, the
+"               buffer list is restored from the viminfo file.  Buffers
+"               without a file name and buffers for help files are not written
+"               to the viminfo file.
+"               When followed by a number, the number specifies the maximum
+"               number of buffers that are stored.  Without a number all
+"               buffers are stored.
 "
-" %		如果包含，保存和恢复缓冲区列表。如果 Vim 启动时
-"		指定文件名参数，缓冲区列表不予恢复。如果 Vim 启
-"		动时没有指定文件名参数，缓冲区列表从 viminfo文件
-"		里恢复。没有文件名的缓冲区和帮助文件的缓冲区不会
-"		写入 viminfo 文件。
-"		如果后跟数值，该数值指定保存的缓冲区的最大个数。
-"		如果没有此数，保存所有的缓冲区。
-" 
-" '		编辑过的文件的最大数目，为它们记住位置标记。如果
-"		'viminfo' 非空，必须包含本参数。
+"       '       Maximum number of previously edited files for which the marks
+"               are remembered.  This parameter must always be included when
+"               'viminfo' is non-empty.
+"               Including this item also means that the jumplist and the
+"               changelist are stored in the viminfo file.
 "
-" /		保存的搜索模式历史的最大项目数目。如果非零，那么
-"		也保存前次搜索和替代模式。如果不包含，使用
-"		'history' 的值。
+"       /       Maximum number of items in the search pattern history to be
+"               saved.  If non-zero, then the previous search and substitute
+"               patterns are also saved.  When not included, the value of
+"               'history' is used.
 "
-" :		保存的命令行历史的最大项目数目。如果不包含，使用
-"               'history' 的值。
-"                                                 
-" <		每个寄存器最大保存的行数。如果为零，不保存寄存器。
-"		如果不包含，所有的行都被保存。'"'是本项目的旧名。
+"       :       Maximum number of items in the command-line history to be
+"               saved.  When not included, the value of 'history' is used.
 "
+"       <       Maximum number of lines saved for each register.  If zero then
+"               registers are not saved.  When not included, all lines are
+"               saved.  '"' is the old name for this item.
+"               Also see the 's' item below: limit specified in Kbyte.
 "
-" @		保存的输入行历史的最大项目数目。如果不包含，使用
-"		'history' 的值。
-"                         
-" c		如果包含，把 viminfo 里的文本从写入时使用的
-"		'encoding' 转换为当前的 'encoding'。
+"       @       Maximum number of items in the input-line history to be
+"               saved.  When not included, the value of 'history' is used.
 "
-" f		是否保存文件位置标记。如果为零，不保存文件位置标记
-"		('0 到 '9，'A 到 'Z)。如果不存在或者非零，它们都被
-"		保存。'0 记住光标的当前位置 (退出或者执行":wviminfo"时)。
+"       c       When included, convert the text in the viminfo file from the
+"               'encoding' used when writing the file to the current
+"               'encoding'.  See viminfo-encoding.
 "
-" 
-" h		载入 viminfo 文件时，关闭 'hlsearch' 的效果。如果
-"		不包含，取决于在最近的搜索命令之后是否使用过":nohlsearch"。
+"       f       Whether file marks need to be stored.  If zero, file marks ('0
+"               to '9, 'A to 'Z) are not stored.  When not present or when
+"               non-zero, they are all stored.  '0 is used for the current
+"               cursor position (when exiting or when doing ":wviminfo").
 "
-" n		viminfo 文件的名字。该名字必须立即跟随在 'n' 之后，
-"		而且这必须是最后一个参数！如果启动 Vim 时指定"-i"
-"		参数，那个文件名覆盖'viminfo'在这里给出的。环境变量
-"		在文件打开时被扩展，而不是设置选项时。
+"       h       Disable the effect of 'hlsearch' when loading the viminfo
+"               file.  When not included, it depends on whether ":nohlsearch"
+"               has been used since the last search command.
 "
-" r		略
+"       n       Name of the viminfo file.  The name must immediately follow
+"               the 'n'.  Must be the last one!  If the "-i" argument was
+"               given when starting Vim, that file name overrides the one
+"               given here with 'viminfo'.  Environment variables are expanded
+"               when opening the file, not when setting the option.
 "
-" s		每个项目千字节计的最大长度。如果为零，不保存寄存器。
-"		目前，只适用于寄存器。缺省的"s10" 会忽略包含超过 10
-"               千字节文本的寄存器。另见上面的 '<' 项目: 行数限制。
+"       r       Removable media.  The argument is a string (up to the next
+"               ',').  This parameter can be given several times.  Each
+"               specifies the start of a path for which no marks will be
+"               stored.  This is to avoid removable media.  For MS-DOS you
+"               could use "ra:,rb:", for Amiga "rdf0:,rdf1:,rdf2:".  You can
+"               also use it for temp files, e.g., for Unix: "r/tmp".  Case is
+"               ignored.  Maximum length of each 'r' argument is 50
+"               characters.
+"
+"       s       Maximum size of an item in Kbyte.  If zero then registers are
+"               not saved.  Currently only applies to registers.  The default
+"               "s10" will exclude registers with more than 10 Kbyte of text.
+"               Also see the '<' item above: line count limit.
 "
 "--------------------------------------------------------------------
-" 例如: set viminfo='50,<1000,s100,:0,n~/vim/viminfo
+"       Example: 
+"           :set viminfo='50,<1000,s100,:0,n~/vim/viminfo
 "
-" '50			记住最近 50 个你编辑的文件的位置标记。
-" <1000			记住寄存器的内容 (每个不超过1000 行)。
-" s100			跳过超过 100千字节文本的寄存器。
-" :0			不保存命令行历史。
-" n~/vim/viminfo	使用的文件名是"~/vim/viminfo"。
-" no /			因为没有指定'/'，使用缺省。也就是，保存所有的
-"			搜索历史和前次搜索和替代模式。
-" no %			不保存也不读入缓冲区列表。
-" no h			恢复'hlsearch'高亮。
+"       '50             Marks will be remembered for the last 50 files you
+"                       edited.
+"       <1000           Contents of registers (up to 1000 lines each) will be
+"                       remembered.
+"       s100            Registers with more than 100 Kbyte text are skipped.
+"       :0              Command-line history will not be saved.
+"       n~/vim/viminfo  The name of the file to use is "~/vim/viminfo".
+"       no /            Since '/' is not specified, the default will be used,
+"                       that is, save all of the search history, and also the
+"                       previous search and substitute patterns.
+"       no %            The buffer list will not be saved nor read back.
+"       no h            'hlsearch' highlighting will be restored.
+"
 "--------------------------------------------------------------------
 set viminfo='10,\"100,:20,%,n~/.viminfo
 
 "--------------------------------------------------------------------
-" 打开文件时，按照 viminfo 保存的上次关闭时的光标位置重新设置光标
-"
-" 自动命令服务的对象是所有类型的文件。它所执行的功能是检查是否定义
-" 了标记`",如果定义了就跳转到这个位置去。
-"
-" 该标记记录了上次编辑一个文件时退出前光标的最后位置。
+" Set cursor back to place where it is when last closing file
 "--------------------------------------------------------------------
-au BufReadPost * if line("'\"") > 0|if line("'\"") <= line("$")|exe("norm '\"")|else|exe "norm $"|endif|endif
+au BufReadPost * if line("'\"") > 0 | if line("'\"") <= line("$") | exe("norm '\"") | else | exe "norm $" | endif | endif
 
 """""""""""""""""""""""""""""""""""""""""""""""
 " Files and Encodings
 """""""""""""""""""""""""""""""""""""""""""""""
 
 "--------------------------------------------------------------------
-" 设置VIM系统语言设置 Vim内部使用的字符编码。
-" 它应用于缓冲区、寄存器、表达式所用字符串、viminfo保存的等各种文本。
-" 该选项设置 Vim 可以工作的字符类型。
+" Sets the character encoding used inside Vim.
+" It applies to text in the buffers, registers, 
+" Strings in expressions, text stored in the 
+" viminfo file, etc.
 "--------------------------------------------------------------------
 set encoding=utf-8
 
 "--------------------------------------------------------------------
-" 设置此缓冲区所在文件的字符编码。
-" 如果 'fileencoding' 不同于 'encoding'，读写文件时需要进行转换。
-" 如果 'fileencoding' 为空，使用 'encoding' 相同的值(读写不需要转换)。
+" When 'fileencoding' is different from 'encoding', conversion will be
+" done when writing the file.  For reading see below.
 "
-" 警 告: 转换可能导致信息的丢失！如果'encoding'为"utf-8"，
-" 那么转换的结果通过逆转换很有可能产生相同的文本。相反，如果
-" 'encoding'不是"utf-8"，一些字符可能会丢失
+" When 'fileencoding' is empty, the same value as 'encoding' will be
+" used (no conversion when reading or writing a file).
+"
+" Conversion will also be done when 'encoding' and 'fileencoding' are
+" both a Unicode encoding and 'fileencoding' is not utf-8.  That's
+" because internally Unicode is always stored as utf-8.
+"
+" WARNING: Conversion can cause loss of information!  When
+" 'encoding' is "utf-8" or another Unicode encoding, conversion
+" is most likely done in a way that the reverse conversion
+" results in the same text.  When 'encoding' is not "utf-8" some
+" characters may be lost!
 "--------------------------------------------------------------------
 "set fileencoding=
 "
 "--------------------------------------------------------------------
-" 设置可以识别的语言,这是一个字符编码的列表。
-" 开始编辑已存在的文件时，参考此选项。
+" This is a list of character encodings considered when starting to edit
+" an existing file.  
 "
-" 如果文件被读入，Vim 尝试使用本列表第一个字符编码。
-" 如果检测到错误，使用列表的下一个。
-" 
-" 如果找到一个能用的编码，设置 'fileencoding'为该值。
-" 如果全都失败, 'fileencoding' 设为空字符串，这意味着使用 'encoding'的值。
+" When a file is read, Vim tries to use the first mentioned character encoding.  
+" If an error is detected, the next one in the list is tried.  
 "
-" 特殊值"ucs-bom" 可用来检查文件开始处的 Unicode 的 BOM (Byte OrderMark 
-" 字节顺序标记)。要使之能正常工作，不能把"utf-8" 或别的 Unicode编码
-" 放在它的前面。8 位编码的项目 (比如，"latin1") 应该放在最后，因为
-" Vim 不会检测出错，因而总会接受该编码。
+" When an encoding is found that works, 'fileencoding' is set to it. If all fail, 
+" 'fileencoding' is set to an empty string, which means the value of 'encoding' 
+" is used.
+"
+" The special value "ucs-bom" can be used to check for a Unicode BOM
+" (Byte Order Mark) at the start of the file.  It must not be preceded
+" by "utf-8" or another Unicode encoding for this to work properly.
+" An entry for an 8-bit encoding (e.g., "latin1") should be the last,
+" because Vim cannot detect an error, thus the encoding is always
+" accepted.
 "--------------------------------------------------------------------
 set fileencodings=ucs-bom,utf-8,cp936,gb18030,big5,euc-jp,euc-kr,latin1
 
@@ -338,15 +394,17 @@ set autoindent
 "--------------------------------------------------------------------
 " Set C-style indent
 "
-" :N    将 case 标号放在 switch() 缩进位置之后的 N 个字符处。
-"	(缺省为'shiftwidth')。
+" :N    Place case labels N characters from the indent of the switch().
 "
-" gN    将 C++ 作用域声明置于其所在代码块的 N 个字符后。(缺省
-"	为'shiftwidth')。作用域声明可以是"public:","protected:" 
-"	或者"private:"。
+" gN    Place C++ scope declarations N characters from the indent of the
+"       block they are in.  (default 'shiftwidth').  A scope declaration
+"       can be "public:", "protected:" or "private:".
 "--------------------------------------------------------------------
 set cindent
-set cinoptions+=g0,:0
+set cinoptions+=g1,:0
+
+" GNU style indenting
+"set cinoptions+={2
 
 "--------------------------------------------------------------------
 " Nowrap lines
@@ -354,10 +412,10 @@ set cinoptions+=g0,:0
 set nowrap
 
 "--------------------------------------------------------------------
-" 设置行宽和自动换行
+" Line width and auto line break
 "--------------------------------------------------------------------
 set lbr
-set tw=120
+set tw=80
 
 "--------------------------------------------------------------------
 " Tab and space
@@ -365,8 +423,8 @@ set tw=120
 set softtabstop=4
 set shiftwidth=4
 
-"au FileType c,cpp set softtabstop=8
-"au FileType c,cpp set shiftwidth=8
+au FileType c,cpp set softtabstop=2
+au FileType c,cpp set shiftwidth=2
 
 au FileType html,xml set softtabstop=2
 au FileType html,xml set shiftwidth=2
@@ -377,17 +435,40 @@ au BufRead,BufNewFile *.js set syntax=jquery
 set expandtab
 
 """""""""""""""""""""""""""""""""""""""""""""""
-" 自定义快捷键
+" Spell check and ctags
 """""""""""""""""""""""""""""""""""""""""""""""
 
-" 选中一段文字并全文搜索这段文字
+"--------------------------------------------------------------------
+" ctags setting
+"--------------------------------------------------------------------
+
+set tags=tags
+set autochdir
+
+"--------------------------------------------------------------------
+" Spell check
+"--------------------------------------------------------------------
+"set spell
+
+"""""""""""""""""""""""""""""""""""""""""""""""
+" Quick Fix
+"""""""""""""""""""""""""""""""""""""""""""""""
+nmap <leader>cn :cn<cr>
+nmap <leader>cp :cp<cr>
+nmap <leader>cw :cw 10<cr>
+
+"""""""""""""""""""""""""""""""""""""""""""""""
+" Hotkeys
+"""""""""""""""""""""""""""""""""""""""""""""""
+
+" Select text and search it
 :vnoremap <silent> ,/ y/<C-R>=escape(@", '\\/.*$^~[]')<CR><CR> 
 :vnoremap <silent> ,? y?<C-R>=escape(@", '\\/.*$^~[]')<CR><CR>
 
-" 模仿MS Windows中的快捷键
+" Windows Ctrl+A
 nmap <C-a> ggvG$
 
-" 快速在分割窗口中打开当前文件
+" Quick open current file in split window
 map <leader>w :sp<cr>
 
 " Smart way to move btw. windows
@@ -402,33 +483,31 @@ map <leader>te :tabedit
 map <leader>tc :tabclose<cr>
 map <leader>tm :tabmove
 
-" 缩写
+" abbr
 iab idate <c-r>=strftime("%Y-%m-%d")<CR>
 iab itime <c-r>=strftime("%H:%M")<CR>
 
-" 利用F9在打开和关闭粘贴模式
+" specifies the key sequence that toggles the 'paste' option.
 set pastetoggle=<F9>
 
 """""""""""""""""""""""""""""""""""""""""""""""
-" Plugins
+" Auto Complete
 """""""""""""""""""""""""""""""""""""""""""""""
-
-"--------------------------------------------------------------------
-" Auto Code Complete
-"--------------------------------------------------------------------
 set completeopt=longest,menu
 
-" f:文件名补全，l:行补全，d:字典补全，]:tag补全
-imap <C-]>             <C-X><C-]>
-imap <C-F>             <C-X><C-F>
-imap <C-D>             <C-X><C-D>
-imap <C-L>             <C-X><C-L> 
+"--------------------------------------------------------------------
+" f: file name auto complete
+" l: line auto complete
+" d: dict auto complete
+" ]: tag auto complete
+"--------------------------------------------------------------------
+imap <C-]>  <C-X><C-]>
+imap <C-F>  <C-X><C-F>
+imap <C-D>  <C-X><C-D>
+imap <C-L>  <C-X><C-L> 
 
 "--------------------------------------------------------------------
 " Auto Brackets Complete
-"
-" <>括号的自动补全仅仅针对html文件，因为c语言等中的比较操作符不需要
-" 补全
 "--------------------------------------------------------------------
 :inoremap ( ()<ESC>i
 :inoremap ) <c-r>=ClosePair(')')<CR>
@@ -445,20 +524,23 @@ au FileType c,cpp,java :inoremap ' ''<ESC>i
 "au FileType html,xml :inoremap > <c-r>=ClosePair('>')<CR>
 
 function ClosePair(char)
-	if getline('.')[col('.') - 1] == a:char
-		return "\<Right>"
-	else
-		return a:char
-	endif
+    if getline('.')[col('.') - 1] == a:char
+        return "\<Right>"
+    else
+        return a:char
+    endif
 endf
 
+"""""""""""""""""""""""""""""""""""""""""""""""
+" Plugins
+"""""""""""""""""""""""""""""""""""""""""""""""
+
 "--------------------------------------------------------------------
-" 插件 - suptab.vim
-" 用途 - 用tab实现自动补全
+" suptab.vim
 " script version: 1.6
 " Vim version: 7.0
 "
-" 注：更新doc命令 :helptags $HOME/.vim/doc
+" :helptags $HOME/.vim/doc
 "--------------------------------------------------------------------
 "use SuperTab completion
 "let g:SuperTabRetainCompletionDuration=
@@ -466,8 +548,7 @@ let g:SuperTabDefaultCompletionType='context'
 let g:SuperTabMidWordCompletion=0
 
 "--------------------------------------------------------------------
-" 插件 - omnicppcomplete.vim
-" 用途 - C++代码自动补全 
+" omnicppcomplete.vim
 " script version: 0.41
 " Vim version: 7.0
 "
@@ -476,19 +557,17 @@ let g:SuperTabMidWordCompletion=0
 " --fields=+iaS
 " --extra=+q
 "--------------------------------------------------------------------
-"let OmniCpp_ShowPrototypeInAbbr = 1	" 总是展示函数原型
+"let OmniCpp_ShowPrototypeInAbbr = 1
 
-" 设置代码提示窗口各元素的颜色
 "highlight Pmenu ctermbg=black
 highlight PmenuSel ctermbg=darkblue
 
 "--------------------------------------------------------------------
-" 插件 - buferexplore.vim
-" 用途 - Buffer Explorer / Browser 
+" buferexplore.vim
 " script version: 7.2.8
 " Vim version: 7.0
 "
-" 使用方法: ',be' ',bv' ',bs' (mapleader is ',')
+" ',be' ',bv' ',bs' (mapleader is ',')
 "--------------------------------------------------------------------
 let g:bufExplorerDefaultHelp=0		" Do not show default help.
 let g:bufExplorerShowRelativePath=1	" Show relative paths.
@@ -497,8 +576,7 @@ let g:bufExplorerSplitRight=0		" Split left.
 let g:bufExplorerSplitBelow=1		" Split new window below current.
 
 "--------------------------------------------------------------------
-" 插件 - The NERD tree
-" 用途 -  A tree explorer plugin for navigating the filesystem
+" The NERD tree
 " script version: 4.2.0
 " Vim version: 7.0
 "--------------------------------------------------------------------
@@ -515,8 +593,7 @@ let g:NERDTreeWinSize=40
 nnoremap F :NERDTreeToggle<cr>
 
 "--------------------------------------------------------------------
-" 插件 - tagbar.vim
-" 用途 - Source code browser 
+" tagbar.vim
 " script version: 2.5
 " Vim version: 7.0
 "--------------------------------------------------------------------
@@ -524,27 +601,29 @@ let g:tagbar_left = 1
 let g:tagbar_sort = 0
 
 nnoremap T :TagbarToggle<CR>
-autocmd VimEnter *.c,*.cpp,*.java,*.py nested :call tagbar#autoopen(1)
+autocmd VimEnter * nested :call tagbar#autoopen(1)
+
+"""""""""""""""""""""""""""""""""""""""""""""""
+" Syntax Highlight Plugins
+"""""""""""""""""""""""""""""""""""""""""""""""
 
 "--------------------------------------------------------------------
-" 插件 - nginx.vim
-" 用途 - highlights configuration files for nginx 
+" nginx.vim
+" highlights configuration files for nginx 
 " script version: 0.3.2
 " Vim version: 6.0
 "--------------------------------------------------------------------
 au BufRead,BufNewFile nginx.conf,openresty_config_sample* set ft=nginx
 
 "--------------------------------------------------------------------
-" 插件 - haproxy.vim
-" 用途 - highlights configuration files for haproxy
+" haproxy.vim
 " script version: 0.3
 " Vim version: 7.0
 "--------------------------------------------------------------------
 au BufRead,BufNewFile haproxy* set ft=haproxy
 
 "--------------------------------------------------------------------
-" 插件 - thrift.vim
-" 用途 - highlights configuration files for thrift
+" thrift.vim
 "--------------------------------------------------------------------
 au BufRead,BufNewFile *.thrift set filetype=thrift
 au! Syntax thrift source ~/.vim/syntax/thrift.vim
