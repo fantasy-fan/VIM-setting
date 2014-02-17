@@ -632,7 +632,7 @@ let g:tagbar_left = 1
 let g:tagbar_sort = 0
 
 nnoremap T :TagbarToggle<CR>
-autocmd VimEnter * nested :call tagbar#autoopen(1)
+"autocmd VimEnter * nested :call tagbar#autoopen(1)
 
 "--------------------------------------------------------------------
 " ctrlp.vim
