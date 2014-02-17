@@ -443,7 +443,7 @@ set expandtab
 "--------------------------------------------------------------------
 
 set tags=tags
-set autochdir
+"set autochdir
 
 " Call AutoLoadCTagsAndCScope()
 " See http://vifix.cn/blog/vim-auto-load-ctags-and-cscope.html
